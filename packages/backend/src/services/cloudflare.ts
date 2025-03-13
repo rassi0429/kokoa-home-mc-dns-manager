@@ -1,5 +1,6 @@
 import axios from 'axios';
-import { CloudFlareSrvRecord, generateMinecraftSrvName, generateSrvContent } from '@kokoa-home-mc-dns-manager/shared';
+import { CloudFlareSrvRecord } from '@kokoa-home-mc-dns-manager/shared';
+import { generateMinecraftSrvName, generateSrvContent } from '@kokoa-home-mc-dns-manager/shared';
 import { logger } from '../utils/logger';
 import dotenv from 'dotenv';
 

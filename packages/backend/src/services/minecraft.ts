@@ -94,7 +94,6 @@ export class MinecraftMonitoringService {
       mc.ping({
         host,
         port,
-        timeout: 5000, // 5秒でタイムアウト
       }, (err, result) => {
         if (err) {
           reject(err);

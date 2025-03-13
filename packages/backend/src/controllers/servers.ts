@@ -22,7 +22,7 @@ export async function getServers(): Promise<MinecraftServer[]> {
  */
 export async function getServer(id: string): Promise<MinecraftServer | null> {
   const serverRepository = getRepository(ServerEntity);
-  const server = await serverRepository.findOne({ where: { id } });
+  const server = await serverRepository.findOne({ where: { id }, relations: ['statuses'] });
   return server || null;
 }
 

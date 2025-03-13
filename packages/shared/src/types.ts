@@ -1,19 +1,5 @@
 import { z } from 'zod';
 
-// Minecraft Server Schema
-export const MinecraftServerSchema = z.object({
-  id: z.string().uuid().optional(),
-  name: z.string().min(1, 'サーバー名は必須です'),
-  dnsRecord: z.string().min(1, 'DNSレコードは必須です'),
-  targetIp: z.string().min(1, 'ターゲットIPは必須です'),
-  targetHostname: z.string().min(1, 'ターゲットホスト名は必須です'),
-  targetPort: z.number().int().min(1, 'ポート番号は1以上である必要があります').max(65535, 'ポート番号は65535以下である必要があります'),
-  createdAt: z.date().optional(),
-  updatedAt: z.date().optional(),
-});
-
-export type MinecraftServer = z.infer<typeof MinecraftServerSchema>;
-
 // Server Status Schema
 export const ServerStatusSchema = z.object({
   id: z.string().uuid().optional(),
@@ -27,6 +13,21 @@ export const ServerStatusSchema = z.object({
 });
 
 export type ServerStatus = z.infer<typeof ServerStatusSchema>;
+
+// Minecraft Server Schema
+export const MinecraftServerSchema = z.object({
+  id: z.string().uuid().optional(),
+  name: z.string().min(1, 'サーバー名は必須です'),
+  dnsRecord: z.string().min(1, 'DNSレコードは必須です'),
+  targetIp: z.string().min(1, 'ターゲットIPは必須です'),
+  targetHostname: z.string().min(1, 'ターゲットホスト名は必須です'),
+  targetPort: z.number().int().min(1, 'ポート番号は1以上である必要があります').max(65535, 'ポート番号は65535以下である必要があります'),
+  createdAt: z.date().optional(),
+  updatedAt: z.date().optional(),
+  statuses: z.array(ServerStatusSchema).optional(),
+});
+
+export type MinecraftServer = z.infer<typeof MinecraftServerSchema>;
 
 // API Response Types
 export interface ApiResponse<T> {

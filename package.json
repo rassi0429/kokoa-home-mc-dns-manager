@@ -12,13 +12,15 @@
     "dev:backend": "npm run dev --workspace=packages/backend",
     "dev:frontend": "npm run dev --workspace=packages/frontend",
     "build": "npm run build:shared && npm run build:backend && npm run build:frontend",
-    "build:shared": "npm run build --workspace=packages/shared",
-    "build:backend": "npm run build --workspace=packages/backend",
+    "build:shared": "tsc -p packages/shared/tsconfig.json",
+    "build:backend": "tsc -p packages/backend/tsconfig.json",
     "build:frontend": "npm run build --workspace=packages/frontend",
     "start": "node packages/backend/dist/index.js",
     "test": "npm run test --workspaces --if-present",
     "lint": "npm run lint --workspaces --if-present",
-    "debug:env": "node scripts/debug-env.js"
+    "debug:env": "node scripts/debug-env.js",
+    "clean": "rimraf packages/*/dist",
+    "rebuild": "npm run clean && npm run build"
   },
   "keywords": [
     "minecraft",

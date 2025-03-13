@@ -4,32 +4,32 @@ import { ServerStatusEntity } from './ServerStatusEntity';
 @Entity('minecraft_servers')
 export class ServerEntity {
   @PrimaryGeneratedColumn('uuid')
-  id: string;
+  id: string = '';
 
   @Column({ length: 100 })
-  name: string;
+  name: string = '';
 
   @Column({ length: 255 })
-  dnsRecord: string;
+  dnsRecord: string = '';
 
   @Column({ length: 255 })
-  targetIp: string;
+  targetIp: string = '';
 
   @Column({ length: 255 })
-  targetHostname: string;
+  targetHostname: string = '';
 
   @Column()
-  targetPort: number;
+  targetPort: number = 25565;
 
   @Column({ length: 255, nullable: true })
-  cloudflareRecordId: string;
+  cloudflareRecordId: string = '';
 
   @CreateDateColumn()
-  createdAt: Date;
+  createdAt: Date = new Date();
 
   @UpdateDateColumn()
-  updatedAt: Date;
+  updatedAt: Date = new Date();
 
   @OneToMany(() => ServerStatusEntity, status => status.server)
-  statuses: ServerStatusEntity[];
+  statuses: ServerStatusEntity[] = [];
 }

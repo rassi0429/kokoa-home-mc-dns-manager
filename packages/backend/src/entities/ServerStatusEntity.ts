@@ -4,30 +4,30 @@ import { ServerEntity } from './ServerEntity';
 @Entity('server_statuses')
 export class ServerStatusEntity {
   @PrimaryGeneratedColumn('uuid')
-  id: string;
+  id: string = '';
 
   @Column({ type: 'uuid' })
-  serverId: string;
+  serverId: string = '';
 
   @ManyToOne(() => ServerEntity, server => server.statuses)
   @JoinColumn({ name: 'serverId' })
-  server: ServerEntity;
+  server: ServerEntity = new ServerEntity();
 
   @Column()
-  isOnline: boolean;
+  isOnline: boolean = false;
 
   @Column()
-  playerCount: number;
+  playerCount: number = 0;
 
   @Column()
-  maxPlayers: number;
+  maxPlayers: number = 0;
 
   @Column({ length: 255, nullable: true })
-  motd: string;
+  motd: string = '';
 
   @Column({ length: 100, nullable: true })
-  version: string;
+  version: string = '';
 
   @CreateDateColumn()
-  lastCheckedAt: Date;
+  lastCheckedAt: Date = new Date();
 }
