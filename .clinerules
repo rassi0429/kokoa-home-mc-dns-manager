@@ -1,0 +1,20 @@
+Nodejsのプロジェクト。
+構成は以下のようにしてください。
+
+### フロントエンド
+Next.jsを使用してください。
+Reactを使用してください。
+TypeScriptを使用してください。
+
+### バックエンド
+Expressを使用してください。
+DBpostgresを使用してください。
+DBはDockerを使用してください。
+
+
+### ファイル構成
+モノレポ構成で作成してください。
+
+Dockerfile
+docker-compose.yml
+package.json

@@ -1,0 +1,36 @@
+{
+  "name": "kokoa-home-mc-dns-manager",
+  "version": "1.0.0",
+  "description": "マインクラフトサーバー用のDNSレコード管理とモニタリングWebサービス",
+  "private": true,
+  "workspaces": [
+    "packages/*"
+  ],
+  "scripts": {
+    "dev": "concurrently \"npm run dev:shared\" \"npm run dev:backend\" \"npm run dev:frontend\"",
+    "dev:shared": "npm run dev --workspace=packages/shared",
+    "dev:backend": "npm run dev --workspace=packages/backend",
+    "dev:frontend": "npm run dev --workspace=packages/frontend",
+    "build": "npm run build:shared && npm run build:backend && npm run build:frontend",
+    "build:shared": "npm run build --workspace=packages/shared",
+    "build:backend": "npm run build --workspace=packages/backend",
+    "build:frontend": "npm run build --workspace=packages/frontend",
+    "start": "node packages/backend/dist/index.js",
+    "test": "npm run test --workspaces --if-present",
+    "lint": "npm run lint --workspaces --if-present",
+    "debug:env": "node scripts/debug-env.js"
+  },
+  "keywords": [
+    "minecraft",
+    "dns",
+    "cloudflare",
+    "monitoring",
+    "prometheus"
+  ],
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "concurrently": "^8.2.0",
+    "typescript": "^5.1.6"
+  }
+}

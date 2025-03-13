@@ -1,0 +1,43 @@
+version: '3.8'
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=development
+      - DATABASE_URL=postgresql://postgres:postgres@db:5432/minecraft_dns
+      - BASIC_AUTH_USER=${BASIC_AUTH_USER:-admin}
+      - BASIC_AUTH_PASS=${BASIC_AUTH_PASS:-password}
+      - CLOUDFLARE_API_KEY=${CLOUDFLARE_API_KEY}
+      - CLOUDFLARE_EMAIL=${CLOUDFLARE_EMAIL}
+      - CLOUDFLARE_ZONE_ID=${CLOUDFLARE_ZONE_ID}
+    volumes:
+      - ./packages/frontend:/app/packages/frontend
+      - ./packages/backend:/app/packages/backend
+      - ./packages/shared:/app/packages/shared
+      - /app/packages/frontend/node_modules
+      - /app/packages/backend/node_modules
+      - /app/packages/shared/node_modules
+    depends_on:
+      - db
+    restart: unless-stopped
+    command: npm run dev
+
+  db:
+    image: postgres:14
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=minecraft_dns
+    volumes:
+      - postgres_data_dev:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    restart: unless-stopped
+
+volumes:
+  postgres_data_dev:
