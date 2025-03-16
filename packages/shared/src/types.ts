@@ -22,6 +22,7 @@ export const MinecraftServerSchema = z.object({
   targetIp: z.string().min(1, 'ターゲットIPは必須です'),
   targetHostname: z.string().min(1, 'ターゲットホスト名は必須です'),
   targetPort: z.number().int().min(1, 'ポート番号は1以上である必要があります').max(65535, 'ポート番号は65535以下である必要があります'),
+  cloudflareRecordId: z.string().optional(),
   createdAt: z.date().optional(),
   updatedAt: z.date().optional(),
   statuses: z.array(ServerStatusSchema).optional(),

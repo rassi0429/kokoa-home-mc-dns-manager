@@ -44,4 +44,5 @@ module.exports = {
     migrationsDir: 'src/migrations',
     subscribersDir: 'src/subscribers',
   },
+  timezone: 'Asia/Tokyo', // タイムゾーンを明示的に設定
 };

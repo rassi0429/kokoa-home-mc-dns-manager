@@ -102,7 +102,7 @@ export function ServerStatus({ serverId }: ServerStatusProps) {
             )}
 
             <div className="text-xs text-gray-400 mt-1">
-                最終確認: {status.lastCheckedAt.toLocaleTimeString()}
+                最終確認: {status.lastCheckedAt.toLocaleString('ja-JP', { timeZone: 'Asia/Tokyo' })}
             </div>
         </div>
     );

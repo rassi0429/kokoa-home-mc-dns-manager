@@ -1,21 +1,35 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { MinecraftServer } from '@kokoa-home-mc-dns-manager/shared';
 import { MinecraftServerSchema } from '@kokoa-home-mc-dns-manager/shared';
 import { splitIpAndPort } from '@kokoa-home-mc-dns-manager/shared';
-import { createServer } from '../utils/api';
+import { createServer, updateServer } from '../utils/api';
 
 interface ServerFormProps {
   onSuccess: () => void;
   onCancel: () => void;
+  server?: MinecraftServer; // 編集モードの場合に渡されるサーバー情報
 }
 
-export function ServerForm({ onSuccess, onCancel }: ServerFormProps) {
-  const [name, setName] = useState('');
-  const [dnsRecord, setDnsRecord] = useState('');
-  const [targetAddress, setTargetAddress] = useState('');
-  const [targetHostname, setTargetHostname] = useState('');
+export function ServerForm({ onSuccess, onCancel, server }: ServerFormProps) {
+  const [name, setName] = useState(server?.name || '');
+  const [dnsRecord, setDnsRecord] = useState(server?.dnsRecord || '');
+  const [targetAddress, setTargetAddress] = useState(server ? `${server.targetIp}:${server.targetPort}` : '');
+  const [targetHostname, setTargetHostname] = useState(server?.targetHostname || '');
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
+  
+  // 編集モード時にサーバー情報が変更された場合、フォームの値を更新
+  useEffect(() => {
+    if (server) {
+      setName(server.name);
+      setDnsRecord(server.dnsRecord);
+      setTargetAddress(`${server.targetIp}:${server.targetPort}`);
+      setTargetHostname(server.targetHostname);
+    }
+  }, [server]);
+  
+  // 編集モードかどうかを判定
+  const isEditMode = !!server;
 
   // フォームを送信する
   const handleSubmit = async (e: React.FormEvent) => {
@@ -46,6 +60,7 @@ export function ServerForm({ onSuccess, onCancel }: ServerFormProps) {
         targetIp,
         targetHostname,
         targetPort,
+        ...(isEditMode && { id: server.id }), // 編集モードの場合はIDを含める
       };
       
       // バリデーション
@@ -79,15 +94,20 @@ export function ServerForm({ onSuccess, onCancel }: ServerFormProps) {
         return;
       }
       
-      // サーバーを作成
-      await createServer(serverData);
+      if (isEditMode) {
+        // サーバーを更新
+        await updateServer(server.id!, serverData);
+      } else {
+        // サーバーを作成
+        await createServer(serverData);
+      }
       
       // 成功時の処理
       onSuccess();
     } catch (err) {
       console.error(err);
       setErrors({
-        form: 'サーバーの作成に失敗しました',
+        form: isEditMode ? 'サーバーの更新に失敗しました' : 'サーバーの作成に失敗しました',
       });
     } finally {
       setLoading(false);
@@ -193,7 +213,7 @@ export function ServerForm({ onSuccess, onCancel }: ServerFormProps) {
           disabled={loading}
           className="px-4 py-2 bg-blue-500 text-white rounded-md text-sm font-medium hover:bg-blue-600 disabled:opacity-50"
         >
-          {loading ? '作成中...' : '作成'}
+          {loading ? (isEditMode ? '更新中...' : '作成中...') : (isEditMode ? '更新' : '作成')}
         </button>
       </div>
     </form>

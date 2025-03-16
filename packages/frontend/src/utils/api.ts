@@ -95,3 +95,32 @@ export async function deleteServer(id: string): Promise<void> {
     throw new Error(response.data.error || 'サーバーの削除に失敗しました');
   }
 }
+
+/**
+ * CloudFlareからDNSレコードをインポートする
+ * @param domain ドメイン名（オプション）
+ * @returns インポート結果
+ */
+export async function importDnsRecords(domain?: string): Promise<{
+  importedCount: number;
+  totalRecords: number;
+  importedServers: string[];
+  message: string;
+}> {
+  const response = await api.post<ApiResponse<{
+    importedCount: number;
+    totalRecords: number;
+    importedServers: string[];
+    message: string;
+  }>>('/servers/import', { domain });
+  
+  if (!response.data.success) {
+    throw new Error(response.data.error || 'DNSレコードのインポートに失敗しました');
+  }
+  
+  if (!response.data.data) {
+    throw new Error('DNSレコードのインポートに失敗しました');
+  }
+  
+  return response.data.data;
+}

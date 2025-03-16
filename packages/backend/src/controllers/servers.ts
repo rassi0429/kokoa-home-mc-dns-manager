@@ -2,9 +2,11 @@ import { MinecraftServer } from '@kokoa-home-mc-dns-manager/shared';
 import { getRepository } from 'typeorm';
 import { ServerEntity } from '../entities/ServerEntity';
 import { CloudFlareService } from '../services/cloudflare';
+import { DnsImportService } from '../services/dns-import';
 import { logger } from '../utils/logger';
 
 const cloudflareService = new CloudFlareService();
+const dnsImportService = new DnsImportService();
 
 /**
  * サーバー一覧を取得する
@@ -117,4 +119,17 @@ export async function deleteServer(id: string): Promise<boolean> {
   await serverRepository.remove(server);
   
   return true;
+}
+
+/**
+ * CloudFlareからDNSレコードをインポートする
+ * @param domain ドメイン名（オプション）
+ * @returns インポート結果の詳細情報
+ */
+export async function importDnsRecords(domain?: string): Promise<{
+  importedCount: number;
+  totalRecords: number;
+  importedServers: string[];
+}> {
+  return dnsImportService.importMinecraftDnsRecords(domain);
 }

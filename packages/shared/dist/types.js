@@ -21,6 +21,7 @@ exports.MinecraftServerSchema = zod_1.z.object({
     targetIp: zod_1.z.string().min(1, 'ターゲットIPは必須です'),
     targetHostname: zod_1.z.string().min(1, 'ターゲットホスト名は必須です'),
     targetPort: zod_1.z.number().int().min(1, 'ポート番号は1以上である必要があります').max(65535, 'ポート番号は65535以下である必要があります'),
+    cloudflareRecordId: zod_1.z.string().optional(),
     createdAt: zod_1.z.date().optional(),
     updatedAt: zod_1.z.date().optional(),
     statuses: zod_1.z.array(exports.ServerStatusSchema).optional(),

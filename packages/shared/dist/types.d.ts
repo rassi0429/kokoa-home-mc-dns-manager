@@ -35,6 +35,7 @@ export declare const MinecraftServerSchema: z.ZodObject<{
     targetIp: z.ZodString;
     targetHostname: z.ZodString;
     targetPort: z.ZodNumber;
+    cloudflareRecordId: z.ZodOptional<z.ZodString>;
     createdAt: z.ZodOptional<z.ZodDate>;
     updatedAt: z.ZodOptional<z.ZodDate>;
     statuses: z.ZodOptional<z.ZodArray<z.ZodObject<{
@@ -72,6 +73,7 @@ export declare const MinecraftServerSchema: z.ZodObject<{
     targetHostname: string;
     targetPort: number;
     id?: string | undefined;
+    cloudflareRecordId?: string | undefined;
     createdAt?: Date | undefined;
     updatedAt?: Date | undefined;
     statuses?: {
@@ -91,6 +93,7 @@ export declare const MinecraftServerSchema: z.ZodObject<{
     targetHostname: string;
     targetPort: number;
     id?: string | undefined;
+    cloudflareRecordId?: string | undefined;
     createdAt?: Date | undefined;
     updatedAt?: Date | undefined;
     statuses?: {

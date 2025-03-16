@@ -1,7 +1,7 @@
 import { Express, Request, Response } from 'express';
 import { MinecraftServerSchema } from '@kokoa-home-mc-dns-manager/shared';
 import { logger } from '../utils/logger';
-import { createServer, deleteServer, getServer, getServers, updateServer } from '../controllers/servers';
+import { createServer, deleteServer, getServer, getServers, importDnsRecords, updateServer } from '../controllers/servers';
 import { extractErrorMessage } from '@kokoa-home-mc-dns-manager/shared';
 
 /**
@@ -132,6 +132,38 @@ export function setupServerRoutes(app: Express): void {
       });
     } catch (error) {
       logger.error('サーバーの削除に失敗しました', { error, id: req.params.id });
+      res.status(500).json({
+        success: false,
+        error: extractErrorMessage(error),
+      });
+    }
+  });
+
+  // CloudFlareからDNSレコードをインポート
+  app.post('/api/servers/import', async (req: Request, res: Response) => {
+    try {
+      const domain = req.body.domain as string | undefined;
+      const result = await importDnsRecords(domain);
+      
+      // インポート結果のメッセージを生成
+      let message = `${result.importedCount}件のサーバーを正常にインポートしました（検出: ${result.totalRecords}件）`;
+      
+      // インポートされたサーバーがある場合は詳細を表示
+      if (result.importedServers.length > 0) {
+        message += `\n\nインポートされたサーバー:\n${result.importedServers.join('\n')}`;
+      }
+      
+      res.status(200).json({
+        success: true,
+        data: {
+          importedCount: result.importedCount,
+          totalRecords: result.totalRecords,
+          importedServers: result.importedServers,
+          message,
+        },
+      });
+    } catch (error) {
+      logger.error('DNSレコードのインポートに失敗しました', { error, domain: req.body.domain });
       res.status(500).json({
         success: false,
         error: extractErrorMessage(error),

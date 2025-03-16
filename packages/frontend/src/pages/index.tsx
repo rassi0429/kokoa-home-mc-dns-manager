@@ -68,7 +68,6 @@ export default function Home() {
       </div>
       
       <div>
-        <h2 className="text-xl font-semibold mb-4">サーバー一覧</h2>
         {loading ? (
           <p>読み込み中...</p>
         ) : servers.length === 0 ? (

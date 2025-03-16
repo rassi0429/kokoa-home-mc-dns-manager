@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { CloudFlareSrvRecord } from '@kokoa-home-mc-dns-manager/shared';
+import { CloudFlareSrvRecord, MinecraftServer } from '@kokoa-home-mc-dns-manager/shared';
 import { generateMinecraftSrvName, generateSrvContent } from '@kokoa-home-mc-dns-manager/shared';
 import { logger } from '../utils/logger';
 import dotenv from 'dotenv';
@@ -35,6 +35,81 @@ export class CloudFlareService {
       'X-Auth-Email': this.email,
       'Authorization': `Bearer ${this.apiKey}`,
       'Content-Type': 'application/json',
+    };
+  }
+
+  /**
+   * 指定したドメインのマインクラフトSRVレコードを取得する
+   * @param domain ドメイン名（オプション）。指定しない場合は全てのSRVレコードを取得
+   * @returns SRVレコードの配列
+   */
+  async getMinecraftSrvRecords(domain?: string): Promise<CloudFlareSrvRecord[]> {
+    try {
+      // SRVレコードのみを取得するパラメータ
+      const params: any = { type: 'SRV' };
+      
+      // ドメインが指定されている場合は、そのドメインとサブドメインのマインクラフトSRVレコードを取得
+      // CloudFlare APIはワイルドカードをサポートしていないため、全てのレコードを取得して
+      // 後でフィルタリングする
+      
+      const response = await axios.get(this.baseUrl, {
+        headers: this.getHeaders(),
+        params
+      });
+
+      if (!response.data.success) {
+        throw new Error(`CloudFlare API error: ${JSON.stringify(response.data.errors)}`);
+      }
+
+      // マインクラフト関連のSRVレコードのみをフィルタリング
+      let records = response.data.result.filter((record: any) => 
+        record.type === 'SRV' && 
+        (record.data.service === '_minecraft' || record.name.includes('_minecraft._tcp'))
+      );
+      
+      // ドメインが指定されている場合は、そのドメインとサブドメインのレコードのみをフィルタリング
+      if (domain) {
+        logger.info(`ドメイン ${domain} とそのサブドメインのSRVレコードをフィルタリングします`);
+        
+        // ドメイン名の末尾にドットがある場合は削除
+        const normalizedDomain = domain.endsWith('.') ? domain.slice(0, -1) : domain;
+        
+        records = records.filter((record: CloudFlareSrvRecord) => {
+          // SRVレコードのドメイン部分を抽出 (_minecraft._tcp.example.com から example.com を取得)
+          const recordDomain = record.name;
+          
+          // 指定されたドメインと完全一致、またはそのサブドメインかどうかをチェック
+          return recordDomain === normalizedDomain || 
+                 recordDomain.endsWith('.' + normalizedDomain);
+        });
+        
+        logger.info(`${records.length}件のマインクラフトSRVレコードが見つかりました`);
+      }
+
+      return records;
+    } catch (error) {
+      console.log(error);
+      logger.error('CloudFlare SRVレコードの取得に失敗しました', { error });
+      throw error;
+    }
+  }
+
+  /**
+   * SRVレコードからMinecraftServerオブジェクトを作成する
+   * @param record CloudFlare SRVレコード
+   * @returns MinecraftServerオブジェクト
+   */
+  parseSrvRecordToServer(record: CloudFlareSrvRecord): Partial<MinecraftServer> {
+    // ドメイン名を抽出 (_minecraft._tcp.example.com から example.com を取得)
+    const domainName = record.data.name;
+    
+    return {
+      name: `Imported: ${domainName}`,
+      dnsRecord: domainName,
+      targetIp: record.data.target,
+      targetHostname: record.data.target,
+      targetPort: record.data.port,
+      cloudflareRecordId: record.id
     };
   }
 
